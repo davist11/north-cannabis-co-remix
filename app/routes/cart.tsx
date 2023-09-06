@@ -6,9 +6,9 @@ import {
 } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { GET_CART } from "~/graphql/checkout";
-import { checkoutCookie } from "~/cookies.server";
 import { formatPrice } from "~/helpers/cart";
 import { getGqlClient } from "~/helpers/graphql";
+import { getSession } from "~/sessions";
 
 type CartItem = {
     id: string;
@@ -39,10 +39,8 @@ export const meta: V2_MetaFunction = () => {
 export const loader: LoaderFunction = async ({ request, params }) => {
     const client = getGqlClient();
 
-    const cookieHeader = request.headers.get("Cookie");
-    const cookie = (await checkoutCookie.parse(cookieHeader)) || {};
-
-    const checkoutId = cookie.id;
+    const session = await getSession(request.headers.get("Cookie"));
+    const checkoutId = session.get("checkoutId");
 
     if (!checkoutId) {
         return redirect("/");

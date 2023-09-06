@@ -508,7 +508,7 @@ export const ADD_ITEM = gql`
         redirectUrl
         updatedAt
     }
-    
+
     mutation AddItemToCheckout(
         $retailerId: ID!
         $checkoutId: ID!

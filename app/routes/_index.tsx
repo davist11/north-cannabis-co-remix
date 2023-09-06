@@ -1,12 +1,17 @@
 import {
-    // json,
+    json,
     type V2_MetaFunction,
-    // type LoaderFunction,
+    type LoaderFunction,
 } from "@remix-run/node";
-// import { useGqlClient } from "~/hooks/use-graphql-client";
-// import { GET_RETAILERS } from "~/graphql/retailers";
-import { Link } from "@remix-run/react";
+import { GET_RETAILERS } from "~/graphql/retailers";
+import { Link, useLoaderData } from "@remix-run/react";
 import { categories, formatCategoryForDisplay } from "~/helpers/categories";
+import { getGqlClient } from "~/helpers/graphql";
+
+// TODO better type
+type RetailersResponse = {
+    retailers: any[];
+};
 
 export const meta: V2_MetaFunction = () => {
     return [
@@ -14,18 +19,20 @@ export const meta: V2_MetaFunction = () => {
     ];
 };
 
-// export const loader: LoaderFunction = async ({ request, params }) => {
-//     // eslint-disable-next-line react-hooks/rules-of-hooks
-//     const client = useGqlClient();
+export const loader: LoaderFunction = async ({ request, params }) => {
+    const client = getGqlClient();
 
-//     const { retailer } = await client.request(GET_RETAILERS, {
-//         retailerId: process.env.RETAILER_ID,
-//     });
+    const { retailers }: RetailersResponse = await client.request(
+        GET_RETAILERS
+    );
 
-//     return json({ retailer });
-// };
+    return json({ retailers });
+};
 
 export default function Index() {
+    const { retailers } = useLoaderData();
+    console.log({ retailers });
+
     return (
         <div className="max-w-5xl mx-auto mt-6">
             <ul className="grid grid-cols-3 gap-2 text-center">
