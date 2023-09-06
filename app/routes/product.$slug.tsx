@@ -12,10 +12,10 @@ import { formatCategoryForDisplay, getCategorySlug } from "~/helpers/categories"
 import { formatPrice } from "~/helpers/cart";
 import { useState } from "react";
 import { ADD_ITEM, CREATE_CHECKOUT } from "~/graphql/checkout";
-import { checkoutCookie } from "~/cookies.server";
 import { type Product } from "./$category";
 import { getGqlClient } from "~/helpers/graphql";
 import { RelatedProducts } from "~/components/related-products";
+import { getSession, commitSession } from "../sessions";
 
 type ProductResponse = {
     product: Product;
@@ -27,19 +27,13 @@ type CreateCheckoutResponse = {
     }
 }
 
-const isObjectEmpty = (obj: any) =>
-    Object.keys(obj).length === 0 && obj.constructor === Object;
-
-
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
     const { product } = data;
     return [{ title: product.name }];
 };
 
 export const action: ActionFunction = async ({ request }: ActionArgs) => {
-    const cookieHeader = request.headers.get("Cookie");
-    const cookie = (await checkoutCookie.parse(cookieHeader)) || {};
-
+    const session = await getSession(request.headers.get("Cookie"));
     const body = await request.formData();
     const productId = body.get("productId");
     const quantity = String(body.get("quantity")) ?? 1;
@@ -47,21 +41,21 @@ export const action: ActionFunction = async ({ request }: ActionArgs) => {
 
     const client = getGqlClient();
 
-    if (isObjectEmpty(cookie)) {
+    if (!session.has("checkoutId")) {
         const {
             createCheckout: { id: checkoutId },
         }: CreateCheckoutResponse = await client.request(CREATE_CHECKOUT, {
             retailerId: process.env.RETAILER_ID,
-            orderType: "PICKUP",
+            orderType: "KIOSK",
             pricingType: "RECREATIONAL",
         });
 
-        cookie.id = checkoutId;
+        session.set("checkoutId", checkoutId);
     }
 
     await client.request(ADD_ITEM, {
         retailerId: process.env.RETAILER_ID,
-        checkoutId: cookie.id,
+        checkoutId: session.get("checkoutId"),
         productId,
         option,
         quantity: Number.parseInt(quantity),
@@ -69,7 +63,7 @@ export const action: ActionFunction = async ({ request }: ActionArgs) => {
 
     return redirect("/cart", {
         headers: {
-            "Set-Cookie": await checkoutCookie.serialize(cookie),
+            "Set-Cookie": await commitSession(session),
         },
     });
 };
