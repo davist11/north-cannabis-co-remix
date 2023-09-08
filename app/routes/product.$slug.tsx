@@ -9,7 +9,7 @@ import {
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { GET_PRODUCT } from "~/graphql/product";
 import { formatCategoryForDisplay, getCategorySlug } from "~/helpers/categories";
-import { formatPrice } from "~/helpers/cart";
+import { formatPrice, orderTypes } from "~/helpers/cart";
 import { useState } from "react";
 import { ADD_ITEM, CREATE_CHECKOUT } from "~/graphql/checkout";
 import { type Product } from "./$category";
@@ -19,6 +19,7 @@ import { getSession, commitSession } from "../sessions";
 
 type ProductResponse = {
     product: Product;
+    checkoutId: string;
 }
 
 type CreateCheckoutResponse = {
@@ -38,6 +39,7 @@ export const action: ActionFunction = async ({ request }: ActionArgs) => {
     const productId = body.get("productId");
     const quantity = String(body.get("quantity")) ?? 1;
     const option = body.get("option");
+    const orderType = body.get("orderType");
 
     const client = getGqlClient();
 
@@ -46,7 +48,7 @@ export const action: ActionFunction = async ({ request }: ActionArgs) => {
             createCheckout: { id: checkoutId },
         }: CreateCheckoutResponse = await client.request(CREATE_CHECKOUT, {
             retailerId: process.env.RETAILER_ID,
-            orderType: "KIOSK",
+            orderType,
             pricingType: "RECREATIONAL",
         });
 
@@ -70,6 +72,8 @@ export const action: ActionFunction = async ({ request }: ActionArgs) => {
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     const client = getGqlClient();
+    const session = await getSession(request.headers.get("Cookie"));
+    const checkoutId = session.get("checkoutId");
 
     if (!params.slug) {
         return json({ product: [] });
@@ -80,11 +84,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         productId: params.slug,
     });
 
-    return json({ product });
+    return json({ product, checkoutId });
 };
 
 export default function Product() {
-    const { product }: ProductResponse = useLoaderData();
+    const { product, checkoutId }: ProductResponse = useLoaderData();
     const displayCategory = formatCategoryForDisplay(product.category);
     const categorySlug = getCategorySlug(product.category)
     const [quantity, setQuantity] = useState(1);
@@ -112,9 +116,12 @@ export default function Product() {
                     ) : null}
                     <h1 className="text-3xl font-bold mb-6">{product.name}</h1>
 
-                    <Form className="mb-6" method="post">
-                        <div className="flex mb-2">
-                            <div className="mr-5">
+                    <Form
+                        className="mb-6 pb-6 border-b border-gray-200"
+                        method="post"
+                    >
+                        <div className="flex mb-3">
+                            <div className="mr-5 pr-5 border-r border-gray-200">
                                 <label
                                     htmlFor="option"
                                     className="block font-bold"
@@ -139,7 +146,7 @@ export default function Product() {
                                 />
                             </div>
 
-                            <div>
+                            <div className="mr-5 pr-5 border-r border-gray-200">
                                 <label
                                     htmlFor="quantity"
                                     className="block font-bold"
@@ -161,6 +168,25 @@ export default function Product() {
                                     }
                                 />
                             </div>
+
+
+                            {!checkoutId && <div>
+                                <label
+                                    htmlFor="orderType"
+                                    className="block font-bold"
+                                >
+                                    Order Type
+                                </label>
+                                <select name="orderType" id="orderType">
+                                    {orderTypes.map(
+                                        ({ name, value, selected = false }) => (
+                                            <option key={value} value={value} selected={selected}>
+                                                {name}
+                                            </option>
+                                        )
+                                    )}
+                                </select>
+                            </div>}
                         </div>
                         <div>
                             <button

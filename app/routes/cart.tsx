@@ -6,7 +6,7 @@ import {
 } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { GET_CART } from "~/graphql/checkout";
-import { formatPrice } from "~/helpers/cart";
+import { formatPrice, getOrderType } from "~/helpers/cart";
 import { getGqlClient } from "~/helpers/graphql";
 import { getSession } from "~/sessions";
 
@@ -29,6 +29,7 @@ type CheckoutResponse = {
         items: CartItem[];
         priceSummary: PriceSummary;
         redirectUrl: string;
+        orderType: string;
     };
 };
 
@@ -61,12 +62,22 @@ export default function Cart() {
         items,
         priceSummary,
         redirectUrl,
-    }: { items: CartItem[]; priceSummary: PriceSummary; redirectUrl : string} =
-        checkout;
+        orderType,
+    }: {
+        items: CartItem[];
+        priceSummary: PriceSummary;
+        redirectUrl: string;
+        orderType: string;
+    } = checkout;
 
     return (
         <div className="max-w-5xl mx-auto mt-6">
-            <h1 className="text-3xl font-bold mb-6">Cart</h1>
+            <h1 className="text-3xl font-bold mb-6">
+                Cart{" "}
+                {orderType ? <span className="font-normal text-sm">
+                    ({getOrderType(orderType)})
+                </span> : null}
+            </h1>
 
             <table className="w-full mb-6">
                 <thead>
