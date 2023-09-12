@@ -1,5 +1,4 @@
-// app/sessions.ts
-import { createCookieSessionStorage } from "@remix-run/node"; // or cloudflare/deno
+import { createCookieSessionStorage } from "@remix-run/node";
 
 type SessionData = {
     checkoutId: string;
@@ -7,7 +6,6 @@ type SessionData = {
 
 const { getSession, commitSession, destroySession } =
     createCookieSessionStorage<SessionData>({
-        // a Cookie from `createCookie` or the CookieOptions to create one
         cookie: {
             name: "__session",
         },
