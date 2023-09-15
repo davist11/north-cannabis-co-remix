@@ -22,6 +22,8 @@ export default function Login() {
         flow: "auth-code",
     });
 
+    console.log({ redirectUri: ENV.GOOGLE_REDIRECT_URI });
+
     return (
         <div className="mx-auto mt-12 flex justify-center">
             <button
