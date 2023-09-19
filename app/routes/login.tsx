@@ -1,6 +1,7 @@
 import { type V2_MetaFunction, type LoaderFunction, json } from "@remix-run/node";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useLoaderData } from "@remix-run/react";
+import { v4 as uuidv4 } from "uuid";
 
 export const meta: V2_MetaFunction = () => {
     return [{ title: "Login" }];
@@ -20,6 +21,7 @@ export default function Login() {
         redirect_uri: ENV.GOOGLE_REDIRECT_URI,
         ux_mode: "redirect",
         flow: "auth-code",
+        state: uuidv4(),
     });
 
     return (
