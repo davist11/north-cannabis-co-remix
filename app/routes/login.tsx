@@ -36,10 +36,8 @@ export default function Login() {
                 </button>
             </div>
             <div className="flex justify-center">
-                <form
-                    method="post"
-                    action={ENV.AUTH_URI}
-                >
+                <form method="post" action={ENV.AUTH_URI}>
+                    <input type="hidden" name="_csrf" value={uuidv4()} />
                     <button
                         type="submit"
                         className="bg-blue-400 p-2 rounded-md"
