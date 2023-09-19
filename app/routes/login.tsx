@@ -11,6 +11,7 @@ export const loader: LoaderFunction = async () =>
     json({
         ENV: {
             GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI,
+            AUTH_URI: process.env.AUTH_URI,
         },
     });
 
@@ -25,13 +26,28 @@ export default function Login() {
     });
 
     return (
-        <div className="mx-auto mt-12 flex justify-center">
-            <button
-                onClick={() => login()}
-                className="bg-green-400 p-2 rounded-md"
-            >
-                Sign in with Google
-            </button>
+        <div className="mx-auto mt-12">
+            <div className="flex justify-center mb-6">
+                <button
+                    onClick={() => login()}
+                    className="bg-green-400 p-2 rounded-md"
+                >
+                    Sign in with Google
+                </button>
+            </div>
+            <div className="flex justify-center">
+                <form
+                    method="post"
+                    action={ENV.AUTH_URI}
+                >
+                    <button
+                        type="submit"
+                        className="bg-blue-400 p-2 rounded-md"
+                    >
+                        Sign in
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }
