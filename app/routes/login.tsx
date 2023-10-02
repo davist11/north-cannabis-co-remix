@@ -10,7 +10,7 @@ export const loader: LoaderFunction = async () =>
         ENV: {
             AUTH_URI: process.env.AUTH_URI,
             DISPO_ID: process.env.DISPO_ID,
-            DEPLOY_URL: process.env.DEPLOY_URL,
+            HOST_URL: process.env.HOST_URL,
         },
     });
 
@@ -24,7 +24,7 @@ export default function Login() {
                     <input
                         type="hidden"
                         name="checkout_url"
-                        value={`${ENV.DEPLOY_URL}/login`}
+                        value={`${ENV.HOST_URL}/login`}
                     />
                     <input
                         type="hidden"
