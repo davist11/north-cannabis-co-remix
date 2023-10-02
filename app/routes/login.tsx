@@ -9,6 +9,8 @@ export const loader: LoaderFunction = async () =>
     json({
         ENV: {
             AUTH_URI: process.env.AUTH_URI,
+            DISPO_ID: process.env.DISPO_ID,
+            DEPLOY_URL: process.env.DEPLOY_URL,
         },
     });
 
@@ -19,6 +21,17 @@ export default function Login() {
         <div className="mx-auto mt-12">
             <div className="flex justify-center">
                 <form method="post" action={ENV.AUTH_URI}>
+                    <input
+                        type="hidden"
+                        name="checkout_url"
+                        value={`${ENV.DEPLOY_URL}/login`}
+                    />
+                    <input
+                        type="hidden"
+                        name="dispensary_id"
+                        value={ENV.DISPO_ID}
+                    />
+
                     <button
                         type="submit"
                         className="bg-green-400 p-2 rounded-md"
