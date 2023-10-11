@@ -1,4 +1,4 @@
-import type { LinksFunction } from "@remix-run/node";
+import { type LinksFunction } from "@remix-run/node";
 import {
     Link,
     Links,
@@ -33,9 +33,14 @@ export default function App() {
                 <header className="bg-gray-700 text-white p-3 mb-6">
                     <div className="max-w-5xl mx-auto flex justify-between items-center">
                         <Link to="/">North Cannabis Co</Link>
-                        <div>
-                            <Link to="/cart">Cart</Link>
-                        </div>
+                        <ul className="flex">
+                            <li className="border-r border-current mr-3 pr-3">
+                                <Link to="/login" className="block">Login</Link>
+                            </li>
+                            <li>
+                                <Link to="/cart" className="block">Cart</Link>
+                            </li>
+                        </ul>
                     </div>
                 </header>
 
