@@ -25,6 +25,7 @@ export const orderTypes: OrderType[] = [
     {
         name: "In Store Pickup",
         value: "IN_STORE_PICKUP",
+        selected: true,
     },
     {
         name: "Pickup",
@@ -33,7 +34,6 @@ export const orderTypes: OrderType[] = [
     {
         name: "Kiosk",
         value: "KIOSK",
-        selected: true,
     },
 ];
 
