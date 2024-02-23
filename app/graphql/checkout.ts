@@ -335,6 +335,7 @@ export const CREATE_CHECKOUT = gql`
         $orderType: OrderType!
         $pricingType: PricingType!
         $metadata: JSON
+        $trackedCartMetaData: TrackedCartMetaDataInput
     ) {
         createCheckout(
             retailerId: $retailerId
@@ -342,6 +343,7 @@ export const CREATE_CHECKOUT = gql`
             orderType: $orderType
             pricingType: $pricingType
             metadata: $metadata
+            trackedCartMetaData: $trackedCartMetaData
         ) {
             ...checkoutFragment
         }
