@@ -8,6 +8,7 @@ const { getSession, commitSession, destroySession } =
     createCookieSessionStorage<SessionData>({
         cookie: {
             name: "__session",
+            secrets: [process.env.COOKIE_SECRET as string],
         },
     });
 
