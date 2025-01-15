@@ -8,15 +8,12 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { categories, formatCategoryForDisplay } from "~/helpers/categories";
 import { getGqlClient } from "~/helpers/graphql";
 
-// TODO better type
 type RetailersResponse = {
     retailers: any[];
 };
 
 export const meta: V2_MetaFunction = () => {
-    return [
-        { title: "North Cannabis Co" },
-    ];
+    return [{ title: "North Cannabis Co" }];
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
